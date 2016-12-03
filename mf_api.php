@@ -1,4 +1,8 @@
 <?
+//Library for Mailforce API
+//Version: 1.0 - 20161201
+//Author: Chantive www.chantive.it
+//
 class curlCall {
 	private $curl;
 	private $endpoint;
@@ -24,7 +28,7 @@ class curlCall {
 	}
 	
 	function setPostFields($postFields) {
-		curl_setopt($this->curl, CURLOPT_POST, true); //Aggiunto *****************************
+		curl_setopt($this->curl, CURLOPT_POST, true); 
 		return curl_setopt($this->curl, CURLOPT_POSTFIELDS, $postFields);
 	}
 	

@@ -1,7 +1,7 @@
 <?
 //Esempio d'uso del wrapper in PHP con autenticazione Oauth2
 //Author: Mailforce
-//Date: 2016-04-29 15:18:00
+//Date: 2016-12-02 12:35:00
 
 define(MF_ENDPOINT,'http://api.mailforcelab.it/');
 define(MF_OAUTH_BASE_URI, 	MF_ENDPOINT.'oauth');
