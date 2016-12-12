@@ -1,8 +1,4 @@
 <?
-//Library for Mailforce API
-//Version: 1.0 - 20161201
-//Author: Chantive www.chantive.it
-//
 class curlCall {
 	private $curl;
 	private $endpoint;
@@ -28,7 +24,7 @@ class curlCall {
 	}
 	
 	function setPostFields($postFields) {
-		curl_setopt($this->curl, CURLOPT_POST, true); 
+		curl_setopt($this->curl, CURLOPT_POST, true); //Aggiunto *****************************
 		return curl_setopt($this->curl, CURLOPT_POSTFIELDS, $postFields);
 	}
 	
@@ -41,6 +37,10 @@ class MF_REST {
 	var $curl;
 	var $response;
 	var $applicationName;
+	var $auth;
+	var $listUID;
+	var $mfclient;	
+
 	private $clientID;
 	private $clientPass;
 	private $redirectUri;
@@ -48,10 +48,6 @@ class MF_REST {
 	private $access_token;
 	private $refresh_token;
 	private $api_key;
-	
-	var $auth;
-	var $listUID;
-	var $mfclient;	
 	
 	function __construct($name="MF_REST_API") {
 		session_name($name);
@@ -94,19 +90,11 @@ class MF_REST {
 	function setScopes($scopes = '') {
 		$this->scopes=$scopes;
 	}	
-		
-	
 	
 	function execute() {
-		//print_r($this->curl); 
-		//print_r(curl_exec($this->curl->getResource())); 
 		$this->response =  curl_exec($this->curl->getResource()) ; //restituisce un JSON
-		//print_r($this->response->error);
-		//echo curl_error($this->curl->getResource());exit;
-		//return $this->response->error==""?true:false;
 		return $this->response;
 	}
-	
 	
 	function authorize_url( $state = 1 ) {
 		
@@ -160,19 +148,20 @@ class MF_REST {
 		$client_id = $this->clientID;
 	 	$client_secret = $this->clientPass;
 	 	$redirect_uri = $this->redirectUri;
+		$refresh_token = $_SESSION['refresh_token'];
 
 		$body = "grant_type=refresh_token";
 		$body .= "&client_id=".urlencode($client_id);
 		$body .= "&client_secret=".urlencode($client_secret);
-		$body .= "&refresh_token=".urlencode($this->refresh_token);
-		
+		$body .= "&refresh_token=".urlencode($_SESSION['refresh_token']);
+
 		$this->curl = new curlCall(MF_OAUTH_TOKEN_URI);
 		$this->curl->setPostFields($body);
 		 
 		if ( $this->execute() ) {
 			$tokenObject = json_decode($this->response);
 			return json_decode(json_encode(array('access_token'=>$tokenObject->access_token, 'expires_in'=>$tokenObject->expires_in, 'refresh_token'=>$tokenObject->refresh_token)));
-		} 
+		}
 		return $this->response;		
 	}
 	
@@ -200,7 +189,6 @@ class MF_REST {
 
 class MF_REST_Lists extends MF_REST {
 
-	
 	function __construct($mfclient) {
 		$this->mfclient = $mfclient;
 	}

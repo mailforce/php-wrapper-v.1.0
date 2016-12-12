@@ -1,7 +1,7 @@
 <?
 //Esempio d'uso del wrapper in PHP con autenticazione Oauth2
 //Author: Mailforce
-//Date: 2016-12-02 12:35:00
+//Date: 2016-12-12 18:21:00
 
 define(MF_ENDPOINT,'http://api.mailforcelab.it/');
 define(MF_OAUTH_BASE_URI, 	MF_ENDPOINT.'oauth');
@@ -53,19 +53,19 @@ if (  $mfclient->getAccessToken() ) {
 		echo '<textarea style="width:100%; height:200px">';
 		print_r($result->response);
 		echo "</textarea>";
-	} else {
-		echo $result->response->error;
+	} 
+	
+	$response = json_decode($result->response);
+	
+	if ($response->error=="expired_token") {
+		$tokenObj = $mfclient->refreshToken();
+		$mfclient->setToken($tokenObj->access_token);
+		$redirect = "http://".$_SERVER['HTTP_HOST']. $_SERVER['PHP_SELF'];
+		Header('Location: '.filter_var($redirect, FILTER_SANITIZE_URL));
+		exit;
+	}	
 
-		if ($result->response->error=="invalid_token") {
-			$tokenObj = $mfclient->refreshToken();
-			$mfclient->setToken($tokenObj->access_token);
-			$redirect = "http://".$_SERVER['HTTP_HOST']. $_SERVER['PHP_SELF'];
-			Header('Location: '.filter_var($redirect, FILTER_SANITIZE_URL));
-			exit;
-		}
-	}
-
-	echo "<hr>Token: ".$_SESSION['access_token'];
+	echo "<hr>Token: ".$_SESSION['access_token']." - ".$_SESSION['refresh_token'];
 	echo '<hr><a href="?logout">Logout</a>';
 }
 ?>
